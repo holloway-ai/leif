@@ -7,6 +7,5 @@ ENV WEB_CONCURRENCY 2
 COPY ./requirements.txt ./requirements.txt
 RUN pip install -r requirements.txt
 
-RUN spacy download ddd
 
 COPY ./app /app/app
