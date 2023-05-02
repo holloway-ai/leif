@@ -53,3 +53,5 @@ output/
 
 myflaskapp/
 bower_components
+
+.*_cache
