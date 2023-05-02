@@ -55,3 +55,4 @@ myflaskapp/
 bower_components
 
 .*_cache
+secrets/*

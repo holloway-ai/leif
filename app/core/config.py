@@ -2,6 +2,9 @@ import secrets
 from typing import List, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, validator
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -26,8 +29,8 @@ class Settings(BaseSettings):
         raise ValueError(v)
 
     PROJECT_NAME: str
-    MY_API_KEY: str
-    TEST_SECRET: str
+    # for API_TOKEN create file in secrets folder and add variable
+    TEST_SECRET: str  # example of secret
 
     class Config:
         case_sensitive = True

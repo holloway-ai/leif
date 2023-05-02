@@ -3,10 +3,15 @@
 Search engine
 
 ---
+## Devcontainer 
 
-## Azure Search Cognitive Skills
-For instructions on adding your API as a Custom Cognitive Skill in Azure Search see:
-https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface
+Just run codespace of devcontainer
+Note: Python path in dev environment : /usr/local/py-utils/venvs/poetry/bin/python 
+
+### pytests 
+
+[vscode pytest](https://code.visualstudio.com/docs/python/testing) should work from the box.
+You can run pytest 
 
 ## Resources
 This project has two key dependencies:
@@ -18,13 +23,12 @@ This project has two key dependencies:
 ---
 
 ## Run Locally
-To run locally in debug mode run:
+To run locally in debug mode run (in dev environment):
 
 ```
-
-uvicorn app.api:app --reload
+uvicorn app.main:app --reload
 ```
-Open your browser to http://localhost:8000/docs to view the OpenAPI UI.
+Open your browser to http://localhost:8000 to view the OpenAPI UI.
 
 ![Open API Image](./images/cookiecutter-docs.png)
 
