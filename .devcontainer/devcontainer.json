@@ -37,18 +37,23 @@
 				"python.formatting.provider": "black",
 				"python.linting.mypyEnabled": true,
 				"python.linting.enabled": true,
-				"python.defaultInterpreterPath": "./.venv/bin/python"
+				"python.defaultInterpreterPath": "/usr/local/py-utils/venvs/poetry/bin/python",
+				"python.venvFolders": [
+					"/usr/local/py-utils/venvs"
+				],
+				"python.poetryPath": "/usr/local/py-utils/bin/poetry",
+				"pylint.interpreter": [
+					"/usr/local/py-utils/venvs/poetry/bin/python"
+				]
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"GitHub.vscode-pull-request-github",
-				"ms-python.vscode-pylance",
 				"ms-python.python",
-				"streetsidesoftware.code-spell-checker",
 				"ms-python.black-formatter",
 				"ms-python.pylint",
-				"Vue.volar",
-				"Vue.vscode-typescript-vue-plugin"
+				"ms-python.vscode-pylance",
+				"streetsidesoftware.code-spell-checker"
 			]
 		}
 	},

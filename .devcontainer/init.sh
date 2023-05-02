@@ -1,2 +1,2 @@
 pipx install poetry
-poetry config virtualenvs.in-project true && poetry install
+poetry config virtualenvs.create false && poetry install --with=dev
