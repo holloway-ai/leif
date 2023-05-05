@@ -1,6 +1,6 @@
 # leif
 
-Search engine
+Search engine. 
 
 ---
 ## Devcontainer 
