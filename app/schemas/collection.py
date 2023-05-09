@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-
 # Shared properties
 class CollectionBase(BaseModel):
     name: Optional[str] = None
@@ -24,4 +23,5 @@ class CollectionInDBBase(CollectionBase):
 
 # Properties to return to client
 class Collection(CollectionInDBBase):
-    pass
+    name: str
+    description: str
