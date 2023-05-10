@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
-from collections import defaultdict
 import os
 
 # from dotenv import load_dotenv, find_dotenv
