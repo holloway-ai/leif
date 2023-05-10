@@ -8,3 +8,7 @@ class SearchResult(BaseModel):
     path: str
     locale: str
 
+class SearchResultFull(BaseModel):
+    results: List[SearchResult]
+    suggestions: List[SearchResult]
+    totalHits: int

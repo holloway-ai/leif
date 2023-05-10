@@ -1,3 +1,3 @@
-from .collection import Collection, CollectionCreate, CollectionUpdate
-from .document import Document, DocumentCreate, DocumentUpdate
-from .search import SearchResult
+from .collection import Collection, CollectionCreate
+from .document import Document, DocumentUpdate
+from .search import SearchResult, SearchResultFull

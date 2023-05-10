@@ -5,50 +5,43 @@ from fastapi import APIRouter, Depends, HTTPException
 from app import schemas
 from app.api import deps
 
-from app.shared_state import collections
+from app.shared_state import existing_collections
 
 router = APIRouter()
 
 @router.get("/", response_model=List[schemas.Collection])
 def list_collections() -> Any:
     """
-    Retrieve collections.
+    Retrieve existing_collections.
     """
-    return collections
+    return existing_collections
 
 @router.post("/", response_model=schemas.Collection)
 def create_collection(new_collection: schemas.CollectionCreate) -> Any:
-    for collection in collections:
-        if collection.id == new_collection.id:
+    for collection in existing_collections:
+        if collection.name == new_collection.name:
             raise HTTPException(status_code=409, detail="Collection already exists")
-
-    collection = schemas.Collection(id=new_collection.id, title=new_collection.title, description=new_collection.description, documents=[])
-    collections.append(collection)
+        
+    collection = schemas.Collection(name=new_collection.name,
+                                    description=new_collection.description,
+                                    documents=[],
+                                    ids=[])
+    existing_collections.append(collection)
     return collection
 
-@router.put("/{id}", response_model=schemas.Collection)
-def update_collection(id: str, updated_collection: schemas.CollectionUpdate) -> Any:
-    for collection in collections:
-        if collection.id == id:
-            collection.title = updated_collection.title or collection.title
-            collection.description = updated_collection.description or collection.description
+@router.put("/{name}", response_model=schemas.Collection)
+def update_collection(name: str, updated_collection: schemas.CollectionCreate) -> Any:
+    for collection in existing_collections:
+        if collection.name == name:
+            collection.name = updated_collection.name
+            collection.description = updated_collection.description
             return collection
-
     raise HTTPException(status_code=404, detail="Collection not found")
 
-@router.get("/{id}", response_model=schemas.Collection)
-def read_collection(id: str) -> Any:
-    for collection in collections:
-        if collection.id == id:
+@router.delete("/{name}", response_model=schemas.Collection)
+def delete_collection(name: str) -> Any:
+    for collection in existing_collections:
+        if collection.name == name:
+            existing_collections.remove(collection)
             return collection
-
-    raise HTTPException(status_code=404, detail="Collection not found")
-
-@router.delete("/{id}", response_model=schemas.Collection)
-def delete_collection(id: str) -> Any:
-    for collection in collections:
-        if collection.id == id:
-            collections.remove(collection)
-            return collection
-
     raise HTTPException(status_code=404, detail="Collection not found")

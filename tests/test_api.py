@@ -1,5 +1,6 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
+
 import os
 from starlette.testclient import TestClient
 
@@ -20,7 +21,9 @@ def test_api():
 
     client = TestClient(app)
 
-    response = client.get(f"{settings.API_V1_STR}/collection/")
+    response = client.get(f"{settings.API_V1_STR}/collections/")
+#    response = client.get(f"{settings.API_V1_STR}/collections/")
+
     assert response.status_code == 200
 
     results = response.json()

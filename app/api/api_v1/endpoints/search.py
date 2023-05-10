@@ -3,23 +3,33 @@ from fastapi import APIRouter, HTTPException
 from app import schemas
 from app.api import deps
 
-from app.shared_state import collections
+from app.shared_state import existing_collections
 
 router = APIRouter()
 
-@router.get("/", response_model=List[schemas.SearchResult])
-def search(query: str) -> Any:
+@router.get("/", response_model = schemas.SearchResultFull)
+def search(query: str) -> Any:   
+    emptySearchResult =  schemas.SearchResult(id="", title="", description="", path="", locale="")
     results = []
+    suggestions = []        # EMPTY FOR NOW
 
-    for collection in collections:
+    if len(existing_collections) < 1:
+        raise HTTPException(status_code=404, detail="No Collections")
+
+    for collection in existing_collections:
+        if len(collection.documents) < 1 :
+            continue
         for document in collection.documents:
-            if query.lower() in document.title.lower():
-                result = schemas.SearchResult(id=document.path, # IT IS PATH FOR NOW
+            if query.lower() == document.title.lower():
+                result = schemas.SearchResult(id=f"{collection.name}_{document.path}", # ID IS PATH FOR NOW
                                               title=document.title, 
                                               description=document.description, 
                                               path=document.path, 
                                               locale=document.localeCode)
                 results.append(result)
-                suggestions = []        # EMPTY FOR NOW
 
-    return {"results": results, "suggestions": suggestions, "totalHits": len(results)+ len(suggestions)}
+    return schemas.SearchResultFull( results = results, 
+                                     suggestions = suggestions, 
+                                     totalHits = len(results)+ len(suggestions) )
+
+    
