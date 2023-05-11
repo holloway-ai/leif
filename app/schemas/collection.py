@@ -1,27 +1,12 @@
-from typing import Optional
-
+from typing import Dict, List
 from pydantic import BaseModel
+from .document import Document
 
-
-# Shared properties
-class CollectionBase(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-
-
-# Properties to receive on Collection creation
-class CollectionCreate(CollectionBase):
+class Collection(BaseModel):
     name: str
+    description: str
+    documents: Dict[str, Document]
 
-
-# Properties to receive on Collection update
-class CollectionUpdate(CollectionBase):
-    pass
-
-# Properties shared by models stored in DB
-class CollectionInDBBase(CollectionBase):
-    pass
-
-# Properties to return to client
-class Collection(CollectionInDBBase):
-    pass
+class CollectionCreate(BaseModel):
+    name: str
+    description: str

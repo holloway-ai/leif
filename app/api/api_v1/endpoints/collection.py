@@ -2,67 +2,56 @@ from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-
 from app import schemas
 from app.api import deps
 
+from app.shared_state import existing_collections
+
 router = APIRouter()
 
-fake_db = [schemas.Collection(name="joan", description="Only implemented collection")]
-
-
-@router.get("/", response_model=List[schemas.Collection])
+@router.get("/", response_model=List[str])
 def list_collections() -> Any:
     """
-    Retrieve items.
+    Retrieve existing collections names.
     """
-    return fake_db
-
+    return list(existing_collections.keys())
 
 @router.post("/", response_model=schemas.Collection)
-def create_collection(
-    new_collection: schemas.CollectionCreate,
-) -> Any:
+def create_collection(new_collection: schemas.CollectionCreate) -> Any:
     """
-    Create new collection.
+    Add new empty collection.
     """
-    if new_collection.name in [collection.name for collection in fake_db]:
+    if new_collection.name in existing_collections:
         raise HTTPException(status_code=409, detail="Collection already exists")
-    else:
-        raise HTTPException(status_code=501, detail="Not implemented")
 
-    return fake_db[0]
-
+    collection = schemas.Collection(name=new_collection.name,
+                                    description=new_collection.description,
+                                    documents={}
+                                    )
+    existing_collections[new_collection.name] = collection
+    return collection
 
 @router.put("/{name}", response_model=schemas.Collection)
-def update_item(
-    updated_collection: schemas.CollectionUpdate,
-) -> Any:
-    """
-    Update an collection.
-    """
-    raise HTTPException(status_code=501, detail="Not implemented")
+def update_collection(name: str, updated_collection: schemas.CollectionCreate) -> Any:
+    if name not in existing_collections:
+        raise HTTPException(status_code=404, detail="Collection not found")
 
+    collection = existing_collections[name]
+    collection.name = updated_collection.name
+    collection.description = updated_collection.description
 
-@router.get("/{name}", response_model=schemas.Collection)
-def read_item(
-    name: str,
-) -> Any:
-    """
-    Get collection by name.
-    """
-    for collection in fake_db:
-        if collection.name == name:
-            return collection
+    # Update the dictionary key if the name has changed
+    if name != updated_collection.name:
+        existing_collections[updated_collection.name] = collection
+        del existing_collections[name]
 
-    raise HTTPException(status_code=404, detail="Collection not found")
+    return collection
 
+@router.delete("/{name}", response_model= str )
+def delete_collection(name: str) -> Any:
+    if name not in existing_collections:
+        raise HTTPException(status_code=404, detail="Collection not found")
 
-@router.delete("/{name}", response_model=schemas.Collection)
-def delete_item(
-    name: str,
-) -> Any:
-    """
-    Delete an item.
-    """
-    raise HTTPException(status_code=501, detail="Not implemented")
+    del existing_collections[name]
+
+    return f"Collection {name} deleted"
