@@ -15,7 +15,7 @@ from redis.commands.search.query import Query
 from redis.commands.search.result import Result
 
 # Encode query using Cohere
-def encode_query(query):
+def encode_query(query): 
     return cohere.embed('baseline-embed', texts=[query])[0]
 
 # Run semantic search
