@@ -11,6 +11,10 @@ fastapi = "^0.95.0"
 uvicorn = "^0.21.1"
 pydantic = "^1.10.7"
 python-dotenv = "^1.0.0"
+numpy = "^1.24.3"
+lxml = "^4.9.2"
+redis = "^4.5.5"
+pyquery = "^2.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
