@@ -1764,6 +1764,7 @@ testutils = ["gitpython (>3)"]
 name = "pyquery"
 version = "2.0.0"
 description = "A jquery-like library for python"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
