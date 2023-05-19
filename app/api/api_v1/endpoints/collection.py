@@ -16,7 +16,7 @@ def list_collections() -> Any:
     """
     return list(existing_collections.keys())
 
-@router.post("/", response_model=schemas.Collection)
+@router.post("/", response_model=List[str])
 def create_collection(new_collection: schemas.CollectionCreate) -> Any:
     """
     Add new empty collection.
@@ -29,10 +29,13 @@ def create_collection(new_collection: schemas.CollectionCreate) -> Any:
                                     documents={}
                                     )
     existing_collections[new_collection.name] = collection
-    return collection
+    return list(existing_collections.keys())
 
-@router.put("/{name}", response_model=schemas.Collection)
+@router.put("/{name}", response_model = str)
 def update_collection(name: str, updated_collection: schemas.CollectionCreate) -> Any:
+    """
+    Update collection.
+    """
     if name not in existing_collections:
         raise HTTPException(status_code=404, detail="Collection not found")
 
@@ -45,10 +48,13 @@ def update_collection(name: str, updated_collection: schemas.CollectionCreate) -
         existing_collections[updated_collection.name] = collection
         del existing_collections[name]
 
-    return collection
+    return f"Collection {name} updated: \n name: {collection.name}, \n description: {collection.description}"
 
 @router.delete("/{name}", response_model= str )
 def delete_collection(name: str) -> Any:
+    """
+    Delete collection.
+    """
     if name not in existing_collections:
         raise HTTPException(status_code=404, detail="Collection not found")
 
