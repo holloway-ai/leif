@@ -32,7 +32,9 @@ class Settings(BaseSettings):
     # for API_TOKEN create file in secrets folder and add variable
     TEST_SECRET: str  # example of secret
     COHERE_API_KEY: str # Cohere api key
-    REDIS_CONNECT: str # This will be the filename containing the Redis connection parameters
+    REDIS_PORT: int
+    REDIS_HOST: str
+    REDIS_PASSWORD: str
 
     class Config:
         case_sensitive = True
