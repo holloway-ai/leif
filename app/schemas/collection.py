@@ -6,7 +6,7 @@ class Collection(BaseModel):
     name: str
     description: str
     #documents: Dict[str, Document]
-    documents: Dict[str, str]
+    documents: Dict[str, Document]
 
 class CollectionCreate(BaseModel):
     name: str
