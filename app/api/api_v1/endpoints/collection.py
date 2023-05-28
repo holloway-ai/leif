@@ -3,9 +3,10 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException
 
 from app import schemas
-from app.api import deps
+from app.api import Depends
+from app.api import index
+from app.api import utils
 
-from app.shared_state import existing_collections
 
 router = APIRouter()
 
@@ -14,50 +15,37 @@ def list_collections() -> Any:
     """
     Retrieve existing collections names.
     """
-    return list(existing_collections.keys())
+    existing_collections = [x.decode('utf-8') for x in Depends.db.connection.execute_command('FT._LIST')]
+    
+    return existing_collections
 
-@router.post("/", response_model=List[str])
+@router.post("/", response_model=str)
 def create_collection(new_collection: schemas.CollectionCreate) -> Any:
     """
     Add new empty collection.
     """
-    if new_collection.name in existing_collections:
-        raise HTTPException(status_code=409, detail="Collection already exists")
-
-    collection = schemas.Collection(name=new_collection.name,
-                                    description=new_collection.description,
-                                    documents={}
-                                    )
-    existing_collections[new_collection.name] = collection
-    return list(existing_collections.keys())
-
-@router.put("/{name}", response_model = str)
-def update_collection(name: str, updated_collection: schemas.CollectionCreate) -> Any:
-    """
-    Update collection.
-    """
-    if name not in existing_collections:
-        raise HTTPException(status_code=404, detail="Collection not found")
-
-    collection = existing_collections[name]
-    collection.name = updated_collection.name
-    collection.description = updated_collection.description
-
-    # Update the dictionary key if the name has changed
-    if name != updated_collection.name:
-        existing_collections[updated_collection.name] = collection
-        del existing_collections[name]
-
-    return f"Collection {name} updated: \n name: {collection.name}, \n description: {collection.description}"
+    index.create_index( Depends.db.connection,
+                        new_collection.name, 
+                        utils.get_a_prefix(new_collection.name),
+                        utils.VECTOR_FIELD_NAME, 
+                        utils.VECTOR_DIMENSIONS)
+    
+    return "Index created / updated"
 
 @router.delete("/{name}", response_model= str )
 def delete_collection(name: str) -> Any:
     """
     Delete collection.
-    """
+    """    
+    keys_to_delete = utils.search_by_path(Depends.db.connection, name, "*")
+    for key in keys_to_delete:
+        Depends.db.connection.delete(key)
+    
+    existing_collections = [x.decode('utf-8') for x in Depends.db.connection.execute_command('FT._LIST')]
+
     if name not in existing_collections:
         raise HTTPException(status_code=404, detail="Collection not found")
-
-    del existing_collections[name]
+    
+    Depends.db.connection.execute_command('FT.DROPINDEX', name)
 
     return f"Collection {name} deleted"
