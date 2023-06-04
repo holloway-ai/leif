@@ -10,5 +10,7 @@ class SearchResult(BaseModel):
 
 class SearchResultFull(BaseModel):
     results: List[SearchResult]
-    suggestions: List[SearchResult]
+    answers: List[str]
+    links: List[str]
+    questions: List[str]
     totalHits: int

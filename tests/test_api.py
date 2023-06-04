@@ -3,17 +3,23 @@
 
 import os
 from app.main import app
+import json
 
 from starlette.testclient import TestClient
 import json
 from typing import List
 
 from app.api.api_v1.api import collection, document, search
-from app.schemas import Collection, CollectionCreate, Document
+from app.schemas import Collection, Document
 from app.api import utils
-from app.api import test_documents
 
 client = TestClient(app)
+
+with open('json') as file:
+    test_docs = json.load(file)
+
+test_doc = test_docs[0]
+test_doc_update = test_docs[1]
 
 def test_docs_redirect():
     response = client.get("/")
@@ -34,10 +40,10 @@ def test_update_document():
     # Check if the "test_collection" exists and create it if not
     new_collection = CollectionCreate(name="test_collection", description="Test collection")
     client.post("api/v1/collections/", json=new_collection.dict())
-    new_documents = [test_documents.test_doc]
+    new_documents = [test_doc]
     response = client.post("api/v1/documents/test_collection/", json = new_documents)
 
-    response = client.put("api/v1/documents/test_collection/test_document_1", json=test_documents.test_doc_update)
+    response = client.put("api/v1/documents/test_collection/test_document_1", json=test_doc_update)
     assert response.status_code == 200
 
 def test_read_document():
@@ -46,7 +52,7 @@ def test_read_document():
     # Parse the JSON response data
     existing_collections = existing_collections.json()
     if "test_collection" not in existing_collections:
-        new_collection = CollectionCreate(name="test_collection", description="Test collection")
+        new_collection = Collection(name="test_collection", description="Test collection")
         client.post("api/v1/collections/", json=new_collection.dict())
 
         documents = [Document(path="test_document_1", localeCode="en", title="Test Document 1", 
@@ -62,7 +68,7 @@ def test_delete_document():
     existing_collections = existing_collections.json()
 
     if "test_collection" not in existing_collections:
-        new_collection = CollectionCreate(name="test_collection", description="Test collection")
+        new_collection = Collection(name="test_collection", description="Test collection")
         client.post("api/v1/collections/", json=new_collection.dict())
         documents = [Document(path="test_document_1", localeCode="en", title="Test Document 1", 
                               description="Test Document 1", render="test document 1 render").dict()]
@@ -73,7 +79,7 @@ def test_delete_document():
 
 # Test search endpoint
 def test_search():
-    response = client.get("api/v1/search/?query=Test Document 1")
+    response = client.get("api/v1/search/?query=Questions about God")
     response_data = json.loads(response.content)
     assert response.status_code == 200
     assert isinstance(response_data, dict)
@@ -88,13 +94,13 @@ def test_delete_collection():
 
 # Test collection endpoints
 def test_create_collection():
-    new_collection = CollectionCreate(name="test_collection", description="test collection description")
+    new_collection = Collection(name="test_collection", description="test collection description")
     response = client.post("api/v1/collections/", json=new_collection.dict())
     assert response.status_code == 200
 
 # Test document endpoints
 def test_add_documents():
-    new_documents = [ test_documents.test_doc ]
+    new_documents = [ test_doc ]
     response = client.post("api/v1/documents/test_collection/", json = new_documents)
     assert response.status_code == 200
 
