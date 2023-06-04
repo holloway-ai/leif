@@ -16,6 +16,8 @@ cohere = "^4.5.1"
 lxml = "^4.9.2"
 urllib3 = "1.26.15"
 numpy = "^1.24.3"
+pandas = "^2.0.2"
+openai = "^0.27.7"
 
 
 [tool.poetry.group.dev.dependencies]
