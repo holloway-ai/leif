@@ -7,6 +7,7 @@ from redis.commands.search.query import Query
 
 from app.api import deps, index
 import openai
+from app.core.config import settings  
 
 
 VECTOR_FIELD_NAME = 'encoded_text_block'
@@ -17,9 +18,8 @@ THRESHOLD = int(512/3 * 6 )
 TOP_LINKS = 3
 N_QUESTIONS = 3
 
-
 # Load your OpenAI API key from an environment variable or secret management service
-api_key = 
+api_key = settings.OPENAI_API
 
 # Authenticate with the API
 openai.api_key = api_key
