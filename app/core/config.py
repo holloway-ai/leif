@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     REDIS_PORT: int
     REDIS_HOST: str
     REDIS_PASSWORD: str
+    OPENAI_API: str
 
     class Config:
         case_sensitive = True
