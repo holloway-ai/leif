@@ -40,7 +40,7 @@ jobs:
         poetry install --with dev
     - name: Test with pytest
       run: |
-        poetry run pytest --junitxml=tests/test-results.xml  --cov-report term-missing --cov=app --cov-report=xml:coverage/cov-results.xml --cov-report=html:coverage/cov-results.html
+        poetry run pytest --junitxml=tests/test-results.xml  --cov=app --cov-report=xml:coverage/cov-results.xml --cov-report=html:coverage/cov-results.html
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2.7.0
       if: always()
