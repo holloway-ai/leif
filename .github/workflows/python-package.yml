@@ -14,6 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: "3.10"
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
     steps:
     - name: Check out
       uses: actions/checkout@v3
@@ -35,7 +40,7 @@ jobs:
         poetry install --with dev
     - name: Test with pytest
       run: |
-        poetry run pytest --junitxml=tests/test-results.xml  --cov-report term-missing --cov=app --cov-report=xml:tests/cov-results.xml --cov-report=html:tests/cov-results.html
+        poetry run pytest --junitxml=tests/test-results.xml  --cov-report term-missing --cov=app --cov-report=xml:coverage/cov-results.xml --cov-report=html:coverage/cov-results.html
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2.7.0
       if: always()
@@ -47,6 +52,7 @@ jobs:
     - name: Pytest coverage comment
       id: coverageComment
       uses: MishaKav/pytest-coverage-comment@main
+      if: always()
       with:
-        pytest-coverage-path: ./tests/cov-results.xml
+        pytest-coverage-path: ./coverage/cov-results.xml
         junitxml-path: ./tests/test-results.xml
