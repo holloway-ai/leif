@@ -35,4 +35,18 @@ jobs:
         poetry install --with dev
     - name: Test with pytest
       run: |
-        poetry run pytest
+        poetry run pytest --junitxml=tests/test-results.xml  term-missing --cov=app --cov-report=xml:tests/cov-results.xml --cov-report=html:tests/cov-results.html
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+      if: always()
+      with:
+        files: |
+          tests/*.xml
+          tests/*.trx
+          tests/*.json
+    - name: Pytest coverage comment
+      id: coverageComment
+      uses: MishaKav/pytest-coverage-comment@main
+      with:
+        pytest-coverage-path: ./tests/cov-results.xml
+        junitxml-path: ./tests/test-results.xml
