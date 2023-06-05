@@ -49,6 +49,14 @@ jobs:
           tests/*.xml
           tests/*.trx
           tests/*.json
+    - name: Code Coverage Summary Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: coverage/cov-results.xml
+    - name: Coverage comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        path: code-coverage-results.md
     - name: Pytest coverage comment
       id: coverageComment
       uses: MishaKav/pytest-coverage-comment@main
@@ -56,7 +64,3 @@ jobs:
       with:
         pytest-coverage-path: ./coverage/cov-results.xml
         junitxml-path: ./tests/test-results.xml
-    - name: Coverage comment
-      uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        path: coverage/cov-results.html
