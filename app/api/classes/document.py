@@ -27,7 +27,6 @@ class DocumentDB:
         self.THRESHOLD = int( 512/3 * 6 )
 
     def split_text(self, text):
-        # split the text into sentences
         sentences = re.split('(?<=[.!?])\s', text)
         blocks = []
         current_block = ''
@@ -67,7 +66,6 @@ class DocumentDB:
                     current_block.content = 1 if current_block.text else 0
                 else:
                     if current_block.text:
-                        # split the current text block into chunks if it's too large
                         if len(current_block.text) > self.THRESHOLD :
                             texts = self.split_text(current_block.text )
                             for txt in texts:
@@ -84,7 +82,6 @@ class DocumentDB:
                                                     title= self.title,
                                                     locale= self.locale
                                                     )
-        # don't forget to add the last block
         if current_block.text:
             if len(current_block.text) > self.THRESHOLD :
                 texts = self.split_text(current_block.text )
@@ -111,7 +108,6 @@ class DocumentBlock():
     
         self.COHERE_MODEL = llm.COHERE_MODEL
         
-    # Function to encode blocks using Cohere
     def get_block_embedding(self):
          self.vector = deps.db.embedding.embed(texts=[self.text],  model=self.COHERE_MODEL).embeddings[0]
          self.vector = np.array(self.vector).astype(np.float32)

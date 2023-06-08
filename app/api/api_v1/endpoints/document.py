@@ -1,36 +1,24 @@
+import numpy as np
+from redis import Redis
+from redis.commands.search.query import Query
 from typing import Any, List
 from fastapi import APIRouter, HTTPException, Depends
+
 from app import schemas
 from app.api import llm
 from app.api import deps
-
 from app.api.classes import document as document_class
 from app.api.classes import collection as collection_class
-
-
-import numpy as np
-
-from redis import Redis
-from redis.commands.search.query import Query
 
 router = APIRouter()
 
 
 @router.get("/{collection_name}/", response_model=List[str])
 def list_documents(collection:  collection_class.CollectionDep) -> Any:
+    """
+    List existing documents.
+    """ 
     return collection.list_documents()
-
-
-@router.post("/{collection_name}/", response_model=str)
-def add_documents( collection: collection_class.CollectionDep, documents: List[schemas.Document]) -> Any:
-    """
-    Dump LIST of new documents to a collection.
-    """
-    notification = collection.add_documents( documents )
-    if notification == "Document not found":
-        raise HTTPException(status_code=404, detail="Document not found")
-    
-    return notification
 
 @router.get("/{collection_name}/{path}", response_model=List[str])
 def read_document(collection: collection_class.CollectionDep, path: str) -> Any:
@@ -42,7 +30,17 @@ def read_document(collection: collection_class.CollectionDep, path: str) -> Any:
         raise HTTPException(status_code=404, detail="Document not found")
     
     return document_text
-
+    
+@router.post("/{collection_name}/", response_model=str)
+def add_documents( collection: collection_class.CollectionDep, documents: List[schemas.Document]) -> Any:
+    """
+    Dump LIST of new documents to a collection.
+    """
+    notification = collection.add_documents( documents )
+    if notification == "Documents already exist":
+        raise HTTPException(status_code=404, detail="Documents already exist")
+    
+    return notification
 
 @router.put("/{collection_name}/{path}", response_model = str )
 def update_document( collection: collection_class.CollectionDep, path: str, document: schemas.DocumentUpdate) -> Any:

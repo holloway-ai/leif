@@ -9,5 +9,8 @@ router = APIRouter()
 
 @router.get("/{collection_name}/", response_model = schemas.SearchResultFull)
 def search(collection: collection_class.CollectionDep, query: str) -> Any:
+    """
+    Semantic search in the collection. Question+Answer with links
+    """
     return collection.QA_search(query)
 

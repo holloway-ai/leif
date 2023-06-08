@@ -28,11 +28,8 @@ class CollectionDB():
         return f"{self.get_prefix()}:{str(document_key)}:{str(block_num)}"
         
     def search_by_path(self, tag):
-        # initialize a cursor
         cursor = 0
-        # list to hold the results
         results = []
-        # iterate over keys in the database that match the pattern
         while True:
             cursor, keys = self.connection.scan(cursor, match = self.get_key(tag, "*") )
             for key in keys:
@@ -56,9 +53,7 @@ class CollectionDB():
                     "DISTANCE_METRIC": self.distance_metric}
                 ),
         )
-        # index Definition
         definition = IndexDefinition(prefix=self.get_prefix(), index_type=IndexType.HASH)
-        # create Index
         self.connection.ft(self.name).create_index(fields=schema, definition=definition)
 
     def delete_collection(self):
@@ -74,16 +69,13 @@ class CollectionDB():
         # Check if the list is empty
         if len(keys) < 1:
             return []
-        # Extract document path (key) from redis keys
         document_keys = [key.decode('utf-8').split(":")[1] for key in keys]
-        # Get unique document keys
         unique_document_keys = list(set(document_keys))
         
         return unique_document_keys
 
     def add_documents(self, documents: List[schemas.Document]):
         existing_docs = self.list_documents()
-        # convert basemodel class to DocumentDB
         documents = [document_class.DocumentDB(jdoc=doc) for doc in documents if doc.path not in existing_docs]
         if len(documents) < 1:
             return 'Documents already exist'
@@ -162,10 +154,8 @@ class CollectionDB():
         results = {}
         questions = llm.generate_questions(row_query, n = llm.N_QUESTIONS)
         print('Got questions!')
-        # Generate questions from the query
         for i, question in enumerate( questions ):
             search_results = self.search_query(raw_query = question, top_k = top_k )
-            #print(f"print 1 hit: {search_results[0]}")
             if search_results :
                 result_dics, scores = search_results
             else:
