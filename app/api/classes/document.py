@@ -7,7 +7,7 @@ import lxml.html
 import numpy as np
 import re
 
-class DocumentDB:
+class DocumentDB():
     def __init__(self, jdoc: Union[Document, DocumentUpdate], path: str = None):
         if isinstance(jdoc, Document):
             self.path = jdoc.path
