@@ -105,12 +105,9 @@ class DocumentBlock():
         self.content = content
         self.locale = locale
         self.vector: List[float] = []
-    
-        self.COHERE_MODEL = llm.COHERE_MODEL
-        
-    def get_block_embedding(self):
-         self.vector = deps.db.embedding.embed(texts=[self.text],  model=self.COHERE_MODEL).embeddings[0]
-         self.vector = np.array(self.vector).astype(np.float32)
+            
+    def get_block_embedding( self ):
+         self.vector = llm.get_embedding(self.text)
          return self.vector
     
     def get_block_dict(self, vector_embed):

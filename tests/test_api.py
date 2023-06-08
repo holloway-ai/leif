@@ -127,3 +127,4 @@ def test_search():
     response = client.get("api/v1/search/test_collection/?query=Questions about God")
     response_data = json.loads(response.content)
     assert response.status_code == 200
+

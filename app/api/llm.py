@@ -14,7 +14,7 @@ from app.core.config import settings
 TOP_LINKS = 3
 N_QUESTIONS = 3
 
-COHERE_MODEL = 'embed-multilingual-v2.0'
+EMBEDDING_MODEL = 'embed-multilingual-v2.0'
 VECTOR_DIMENSIONS = 768
 
 # Load your OpenAI API key from an environment variable or secret management service
@@ -24,7 +24,7 @@ openai.api_key = api_key
 OPENAI_MODEL = "gpt-3.5-turbo"
 
 
-def get_embedding(text, model=COHERE_MODEL):
+def get_embedding(text, model=EMBEDDING_MODEL):
     vector = np.array( deps.db.embedding.embed(texts=[text],  model=model).embeddings[0] ).astype(np.float32)
     return vector
 
