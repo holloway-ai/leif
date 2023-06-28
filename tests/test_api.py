@@ -24,6 +24,13 @@ def test_docs():
         data = json.load(json_file)
     return data
 
+@pytest.fixture(scope="session")
+def test_docs_big():
+    json_file_path = os.path.join(os.path.dirname(__file__), 'output.json')
+    with open(json_file_path) as json_file:
+        data = json.load(json_file)
+    return data
+
 @pytest.fixture
 def test_doc(test_docs):
     return test_docs[0]
@@ -59,7 +66,7 @@ def test_update_document(test_doc, test_doc_update):
     new_documents = [test_doc]  # test_doc is already a dictionary
     response = client.post("api/v1/documents/test_collection/", json=new_documents)
 
-    response = client.put("api/v1/documents/test_collection/test_document_1", json=test_doc_update)
+    response = client.put("api/v1/documents/test_collection/12345", json=test_doc_update)
     assert response.status_code == 200
 
 def test_read_document(test_doc):
@@ -74,26 +81,28 @@ def test_read_document(test_doc):
     new_documents = [ test_doc ]
     response = client.post("api/v1/documents/test_collection/", json = new_documents)
 
-    response = client.get("api/v1/documents/test_collection/test_document_1")
+    response = client.get("api/v1/documents/test_collection/12345")
     assert response.status_code == 200
 
-def test_delete_document():
+def test_delete_document( test_doc ):
     # Check if the "test_collection" exists and create it if not
     existing_collections = client.get("api/v1/collections/")
+    # Parse the JSON response data
     existing_collections = existing_collections.json()
-
+    
     if "test_collection" not in existing_collections:
         new_collection = Collection(name="test_collection", description="Test collection")
         client.post("api/v1/collections/", json=new_collection.dict())
-        new_documents = [ test_doc ]
-        response = client.post("api/v1/documents/test_collection/", json = new_documents)
 
-    response = client.delete("api/v1/documents/test_collection/test_document_1")
+    new_documents = [ test_doc ]
+    response = client.post("api/v1/documents/test_collection/", json = new_documents)
+
+    response = client.delete("api/v1/documents/test_collection/12345")
     assert response.status_code == 200
 
 # DELETE collection
-def test_delete_collection():
-       # Check if the "test_collection" exists and create it if not
+def test_delete_collection( ):
+       # Check if the "test_collection" exists and create it if notz
     existing_collections = client.get("api/v1/collections/")
     existing_collections = existing_collections.json()
     if "test_collection" not in existing_collections:
@@ -109,7 +118,7 @@ def test_create_collection():
     assert response.status_code == 200
 
 # Test document endpoints
-def test_add_documents(test_doc, test_doc_update):
+def test_add_documents(test_doc, test_docs_big):
     # Check if the "test_collection" exists and create it if not
     existing_collections = client.get("api/v1/collections/")
     # Parse the JSON response data
@@ -117,8 +126,10 @@ def test_add_documents(test_doc, test_doc_update):
     if "test_collection" not in existing_collections:
         new_collection = Collection(name="test_collection", description="Test collection")
         client.post("api/v1/collections/", json=new_collection.dict())
-    new_documents = [ test_doc ]
+    
+    new_documents =  test_docs_big 
     response = client.post("api/v1/documents/test_collection/", json = new_documents)
+    
     assert response.status_code == 200
 
 

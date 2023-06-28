@@ -20,12 +20,12 @@ def list_documents(collection:  collection_class.CollectionDep) -> Any:
     """ 
     return collection.list_documents()
 
-@router.get("/{collection_name}/{path}", response_model=List[str])
-def read_document(collection: collection_class.CollectionDep, path: str) -> Any:
+@router.get("/{collection_name}/{doc_id}", response_model=List[str])
+def read_document(collection: collection_class.CollectionDep, doc_id: str) -> Any:
     """
-    Get a specific document in the collection by its path.
+    Get a specific document in the collection by its doc_id.
     """
-    document_text = collection.read_document(path)
+    document_text = collection.read_document(doc_id)
     if document_text == "Document not found":
         raise HTTPException(status_code=404, detail="Document not found")
     
@@ -42,24 +42,24 @@ def add_documents( collection: collection_class.CollectionDep, documents: List[s
     
     return notification
 
-@router.put("/{collection_name}/{path}", response_model = str )
-def update_document( collection: collection_class.CollectionDep, path: str, document: schemas.DocumentUpdate) -> Any:
+@router.put("/{collection_name}/{doc_id}", response_model = str )
+def update_document( collection: collection_class.CollectionDep, doc_id: str, document: schemas.DocumentUpdate) -> Any:
     """
     Update a document in a collection.
     """
-    notification = collection.update_document( path, document)
+    notification = collection.update_document( doc_id, document)
     if notification == "Document not found":
         raise HTTPException(status_code=404, detail="Document not found")
 
     return notification
 
 
-@router.delete("/{collection_name}/{path}", response_model = str)
-def delete_document(collection: collection_class.CollectionDep, path: str) -> Any:
+@router.delete("/{collection_name}/{doc_id}", response_model = str)
+def delete_document(collection: collection_class.CollectionDep, doc_id: str) -> Any:
     """
     Delete a document in a collection.
     """   
-    notification = collection.delete_document(path)
+    notification = collection.delete_document(doc_id)
     if notification == "Document not found":
         raise HTTPException(status_code=404, detail="Document not found")
 

@@ -14,3 +14,4 @@ class QnA (BaseModel):
 class SearchResultFull(BaseModel):
     qnas: Dict[str,QnA] = {}
     results: Dict[str,SearchResult] # answers reference results by id , witch is key of dict
+    ordered_refs: Optional[List[str]] = None

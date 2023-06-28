@@ -24,9 +24,10 @@ openai.api_key = api_key
 OPENAI_MODEL = "gpt-3.5-turbo"
 
 
-def get_embedding(text, model=EMBEDDING_MODEL):
-    vector = np.array( deps.db.embedding.embed(texts=[text],  model=model).embeddings[0] ).astype(np.float32)
-    return vector
+
+def get_embedding(texts, model=EMBEDDING_MODEL):
+
+    return deps.db.embedding.embed(texts = texts,  model=model).embeddings
 
 def generate_questions(prompt, model = OPENAI_MODEL, n = N_QUESTIONS):
     message = {"role": "assistant", 
@@ -61,6 +62,6 @@ def generate_answer(question, result_dics: List[Dict[str,str]]):
     # Use OpenAI's gpt-4.0-turbo to generate a summary
     response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[message])
     answer = response['choices'][0]['message']['content']
-    links = [f"[{j+1}] {path}_{tags[j]}" for j, path in enumerate(paths)]
+    refs = [f"[{j+1}] {path}_{tags[j]}" for j, path in enumerate(paths)]
 
-    return answer, links
+    return answer, refs
