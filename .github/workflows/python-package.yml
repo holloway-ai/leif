@@ -40,6 +40,9 @@ jobs:
       run: |
         poetry install --with dev
     - name: Test with pytest
+      env:
+        COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+        OPENAI_API: ${{ secrets.OPENAI_API}}
       run: |
         docker-compose -f docker/docker-local-redis.yml up -d
         poetry run pytest --junitxml=tests/test-results.xml  --cov=app --cov-report=xml:coverage/cov-results.xml --cov-report=html:coverage/cov-results.html
