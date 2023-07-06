@@ -43,6 +43,7 @@ jobs:
       run: |
         docker-compose -f docker/docker-local-redis.yml up -d
         poetry run pytest --junitxml=tests/test-results.xml  --cov=app --cov-report=xml:coverage/cov-results.xml --cov-report=html:coverage/cov-results.html
+        docker-compose -f docker/docker-local-redis.yml down
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2.7.0
       if: always()
