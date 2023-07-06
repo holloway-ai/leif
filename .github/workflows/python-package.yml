@@ -53,8 +53,6 @@ jobs:
       with:
         files: |
           tests/*.xml
-          tests/*.trx
-          tests/*.json
         check_run_annotations: all tests
         job_summary: true
         compare_to_earlier_commit: true
