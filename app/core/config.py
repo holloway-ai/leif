@@ -31,10 +31,10 @@ class Settings(BaseSettings):
     PROJECT_NAME: str
     # for API_TOKEN create file in secrets folder and add variable
     TEST_SECRET: str  # example of secret
-    COHERE_API_KEY: str # Cohere api key
-    REDIS_PORT: int
-    REDIS_HOST: str
-    REDIS_PASSWORD: str
+    COHERE_API_KEY: str  # Cohere api key
+    REDIS_PORT: int = 6379
+    REDIS_HOST: str = "localhost"
+    REDIS_PASSWORD: str = "local1test2leif"
     OPENAI_API: str
 
     class Config:

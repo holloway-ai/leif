@@ -10,6 +10,8 @@ Note: Python path in dev environment : /usr/local/py-utils/venvs/poetry/bin/pyth
 
 ### pytests 
 
+run redis:  `docker-compose -f docker/docker-local-redis.yml up -d`
+
 [vscode pytest](https://code.visualstudio.com/docs/python/testing) should work from the box.
 You can run pytest 
 
