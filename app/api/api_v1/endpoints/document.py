@@ -1,85 +1,67 @@
+import numpy as np
+from redis import Redis
+from redis.commands.search.query import Query
 from typing import Any, List
-from fastapi import APIRouter, HTTPException
-from app import schemas
-from app.api import deps
+from fastapi import APIRouter, HTTPException, Depends
 
-from app.shared_state import existing_collections
+from app import schemas
+from app.api import llm
+from app.api import deps
+from app.api.classes import document as document_class
+from app.api.classes import collection as collection_class
 
 router = APIRouter()
 
-def get_collection_by_name(name: str):
-    """
-    Return collection by name
-    """
-    collection = existing_collections.get(name)
-    if collection:
-        return collection
-    raise HTTPException(status_code=404, detail="Collection not found")
 
 @router.get("/{collection_name}/", response_model=List[str])
-def list_documents(collection_name: str) -> Any:
+def list_documents(collection:  collection_class.CollectionDep) -> Any:
     """
-    Get a list of document IDs in the collection.
-    """
-    collection = get_collection_by_name(collection_name)
-    return list(collection.documents.keys())
+    List existing documents.
+    """ 
+    return collection.list_documents()
 
-@router.post("/{collection_name}/", response_model=List[str])
-def add_documents( collection_name: str, documents: List[schemas.Document]) -> Any:
+@router.get("/{collection_name}/{doc_id}", response_model=List[str])
+def read_document(collection: collection_class.CollectionDep, doc_id: str) -> Any:
+    """
+    Get a specific document in the collection by its doc_id.
+    """
+    document_text = collection.read_document(doc_id)
+    if document_text == "Document not found":
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    return document_text
+    
+@router.post("/{collection_name}/", response_model=str)
+def add_documents( collection: collection_class.CollectionDep, documents: List[schemas.Document]) -> Any:
     """
     Dump LIST of new documents to a collection.
     """
-    collection = get_collection_by_name(collection_name)
- 
-    # Validate and add each document to the collection
-    for document in documents:
-        # Assume that the `path` attribute is used as the document ID
-        if document.path in collection.documents:
-            continue
+    notification = collection.add_documents( documents )
+    if notification == "Documents already exist":
+        raise HTTPException(status_code=404, detail="Documents already exist")
+    
+    return notification
 
-        collection.documents[document.path] = schemas.Document( path = document.path,
-                                                                localeCode = document.localeCode,
-                                                                title = document.title,
-                                                                description = document.description,
-                                                                render = document.render)
-    return list(collection.documents.keys())
-
-@router.get("/{collection_name}/{path}", response_model=schemas.Document)
-def read_document(collection_name: str, path: str) -> Any:
-    """
-    Get a specific document in the collection by its path.
-    """
-    collection = get_collection_by_name(collection_name)
-    document = collection.documents.get(path)
-    if document:
-        return document
-    raise HTTPException(status_code=404, detail="Document not found")
-
-@router.put("/{collection_name}/{path}", response_model=schemas.Document)
-def update_document( collection_name: str, path: str, document: schemas.DocumentUpdate) -> Any:
+@router.put("/{collection_name}/{doc_id}", response_model = str )
+def update_document( collection: collection_class.CollectionDep, doc_id: str, document: schemas.DocumentUpdate) -> Any:
     """
     Update a document in a collection.
     """
-    collection = get_collection_by_name(collection_name)
+    notification = collection.update_document( doc_id, document)
+    if notification == "Document not found":
+        raise HTTPException(status_code=404, detail="Document not found")
 
-    if path in collection.documents:
-        collection.documents[path].localeCode = document.localeCode
-        collection.documents[path].title = document.title
-        collection.documents[path].description = document.description
-        collection.documents[path].render = document.render
-        return collection.documents[path]
+    return notification
 
-    raise HTTPException(status_code=404, detail="Document not found")
 
-@router.delete("/{collection_name}/{path}", response_model = str)
-def delete_document(collection_name: str, path: str) -> Any:
+@router.delete("/{collection_name}/{doc_id}", response_model = str)
+def delete_document(collection: collection_class.CollectionDep, doc_id: str) -> Any:
     """
     Delete a document in a collection.
-    """
-    collection = get_collection_by_name(collection_name)
+    """   
+    notification = collection.delete_document(doc_id)
+    if notification == "Document not found":
+        raise HTTPException(status_code=404, detail="Document not found")
 
-    if path in collection.documents:
-        del collection.documents[path]
-        return f"Document {path} deleted"
+    return notification 
 
-    raise HTTPException(status_code=404, detail="Document not found")

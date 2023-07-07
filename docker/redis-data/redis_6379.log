@@ -1,0 +1,97 @@
+14:C 06 Jul 2023 17:10:10.842 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+14:C 06 Jul 2023 17:10:10.842 # Redis version=6.2.12, bits=64, commit=00000000, modified=0, pid=14, just started
+14:C 06 Jul 2023 17:10:10.842 # Configuration loaded
+14:M 06 Jul 2023 17:10:10.843 * monotonic clock: POSIX clock_gettime
+14:M 06 Jul 2023 17:10:10.846 * Running mode=standalone, port=6379.
+14:M 06 Jul 2023 17:10:10.846 # Server initialized
+14:M 06 Jul 2023 17:10:10.846 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+14:M 06 Jul 2023 17:10:11.036 * <search> Redis version found by RedisSearch : 6.2.12 - oss
+14:M 06 Jul 2023 17:10:11.037 * <search> RediSearch version 2.6.9 (Git=HEAD-b205a1d5)
+14:M 06 Jul 2023 17:10:11.037 * <search> Low level api version 1 initialized successfully
+14:M 06 Jul 2023 17:10:11.037 * <search> concurrent writes: OFF, gc: ON, prefix min length: 2, prefix max expansions: 200, query timeout (ms): 500, timeout policy: return, cursor read size: 1000, cursor max idle (ms): 300000, max doctable size: 1000000, max number of search results:  10000, search pool size: 20, index pool size: 8, 
+14:M 06 Jul 2023 17:10:11.038 * <search> Initialized thread pool!
+14:M 06 Jul 2023 17:10:11.038 * <search> Enabled diskless replication
+14:M 06 Jul 2023 17:10:11.038 * <search> Enabled role change notification
+14:M 06 Jul 2023 17:10:11.039 * Module 'search' loaded from /opt/redis-stack/lib/redisearch.so
+14:M 06 Jul 2023 17:10:11.209 * <graph> Enabled role change notification
+14:M 06 Jul 2023 17:10:11.209 * <graph> Starting up RedisGraph version 2.10.10.
+14:M 06 Jul 2023 17:10:11.210 * <graph> Thread pool created, using 2 threads.
+14:M 06 Jul 2023 17:10:11.210 * <graph> Maximum number of OpenMP threads set to 2
+14:M 06 Jul 2023 17:10:11.213 * Module 'graph' loaded from /opt/redis-stack/lib/redisgraph.so
+14:M 06 Jul 2023 17:10:11.222 * <timeseries> RedisTimeSeries version 10810, git_sha=78d8254a4ed499e4e24566ab76c9275130c8786b
+14:M 06 Jul 2023 17:10:11.222 * <timeseries> Redis version found by RedisTimeSeries : 6.2.12 - oss
+14:M 06 Jul 2023 17:10:11.222 * <timeseries> loaded default CHUNK_SIZE_BYTES policy: 4096
+14:M 06 Jul 2023 17:10:11.222 * <timeseries> loaded server DUPLICATE_POLICY: block
+14:M 06 Jul 2023 17:10:11.222 * <timeseries> Setting default series ENCODING to: compressed
+14:M 06 Jul 2023 17:10:11.222 * <timeseries> Detected redis oss
+14:M 06 Jul 2023 17:10:11.223 * <timeseries> Enabled diskless replication
+14:M 06 Jul 2023 17:10:11.223 * Module 'timeseries' loaded from /opt/redis-stack/lib/redistimeseries.so
+14:M 06 Jul 2023 17:10:11.300 * <ReJSON> version: 20407 git sha: a4412b3 branch: HEAD
+14:M 06 Jul 2023 17:10:11.300 * <ReJSON> Exported RedisJSON_V1 API
+14:M 06 Jul 2023 17:10:11.300 * <ReJSON> Exported RedisJSON_V2 API
+14:M 06 Jul 2023 17:10:11.301 * <ReJSON> Exported RedisJSON_V3 API
+14:M 06 Jul 2023 17:10:11.301 * <ReJSON> Enabled diskless replication
+14:M 06 Jul 2023 17:10:11.301 * <ReJSON> Created new data type 'ReJSON-RL'
+14:M 06 Jul 2023 17:10:11.301 * Module 'ReJSON' loaded from /opt/redis-stack/lib/rejson.so
+14:M 06 Jul 2023 17:10:11.301 * <search> Acquired RedisJSON_V3 API
+14:M 06 Jul 2023 17:10:11.301 * <graph> Acquired RedisJSON_V1 API
+14:M 06 Jul 2023 17:10:11.317 * <bf> RedisBloom version 2.4.5 (Git=unknown)
+14:M 06 Jul 2023 17:10:11.317 * Module 'bf' loaded from /opt/redis-stack/lib/redisbloom.so
+14:M 06 Jul 2023 17:10:11.317 * Ready to accept connections
+14:C 06 Jul 2023 17:15:36.229 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+14:C 06 Jul 2023 17:15:36.233 # Redis version=6.2.12, bits=64, commit=00000000, modified=0, pid=14, just started
+14:C 06 Jul 2023 17:15:36.233 # Configuration loaded
+14:M 06 Jul 2023 17:15:36.234 * monotonic clock: POSIX clock_gettime
+14:M 06 Jul 2023 17:15:36.236 * Running mode=standalone, port=6379.
+14:M 06 Jul 2023 17:15:36.236 # Server initialized
+14:M 06 Jul 2023 17:15:36.236 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+14:M 06 Jul 2023 17:15:36.389 * <search> Redis version found by RedisSearch : 6.2.12 - oss
+14:M 06 Jul 2023 17:15:36.390 * <search> RediSearch version 2.6.9 (Git=HEAD-b205a1d5)
+14:M 06 Jul 2023 17:15:36.390 * <search> Low level api version 1 initialized successfully
+14:M 06 Jul 2023 17:15:36.390 * <search> concurrent writes: OFF, gc: ON, prefix min length: 2, prefix max expansions: 200, query timeout (ms): 500, timeout policy: return, cursor read size: 1000, cursor max idle (ms): 300000, max doctable size: 1000000, max number of search results:  10000, search pool size: 20, index pool size: 8, 
+14:M 06 Jul 2023 17:15:36.390 * <search> Initialized thread pool!
+14:M 06 Jul 2023 17:15:36.390 * <search> Enabled diskless replication
+14:M 06 Jul 2023 17:15:36.390 * <search> Enabled role change notification
+14:M 06 Jul 2023 17:15:36.391 * Module 'search' loaded from /opt/redis-stack/lib/redisearch.so
+14:M 06 Jul 2023 17:15:36.600 * <graph> Enabled role change notification
+14:M 06 Jul 2023 17:15:36.600 * <graph> Starting up RedisGraph version 2.10.10.
+14:M 06 Jul 2023 17:15:36.602 * <graph> Thread pool created, using 2 threads.
+14:M 06 Jul 2023 17:15:36.602 * <graph> Maximum number of OpenMP threads set to 2
+14:M 06 Jul 2023 17:15:36.602 * Module 'graph' loaded from /opt/redis-stack/lib/redisgraph.so
+14:M 06 Jul 2023 17:15:36.641 * <timeseries> RedisTimeSeries version 10810, git_sha=78d8254a4ed499e4e24566ab76c9275130c8786b
+14:M 06 Jul 2023 17:15:36.641 * <timeseries> Redis version found by RedisTimeSeries : 6.2.12 - oss
+14:M 06 Jul 2023 17:15:36.641 * <timeseries> loaded default CHUNK_SIZE_BYTES policy: 4096
+14:M 06 Jul 2023 17:15:36.641 * <timeseries> loaded server DUPLICATE_POLICY: block
+14:M 06 Jul 2023 17:15:36.641 * <timeseries> Setting default series ENCODING to: compressed
+14:M 06 Jul 2023 17:15:36.642 * <timeseries> Detected redis oss
+14:M 06 Jul 2023 17:15:36.642 * <timeseries> Enabled diskless replication
+14:M 06 Jul 2023 17:15:36.642 * Module 'timeseries' loaded from /opt/redis-stack/lib/redistimeseries.so
+14:M 06 Jul 2023 17:15:36.734 * <ReJSON> version: 20407 git sha: a4412b3 branch: HEAD
+14:M 06 Jul 2023 17:15:36.734 * <ReJSON> Exported RedisJSON_V1 API
+14:M 06 Jul 2023 17:15:36.734 * <ReJSON> Exported RedisJSON_V2 API
+14:M 06 Jul 2023 17:15:36.734 * <ReJSON> Exported RedisJSON_V3 API
+14:M 06 Jul 2023 17:15:36.734 * <ReJSON> Enabled diskless replication
+14:M 06 Jul 2023 17:15:36.734 * <ReJSON> Created new data type 'ReJSON-RL'
+14:M 06 Jul 2023 17:15:36.734 * Module 'ReJSON' loaded from /opt/redis-stack/lib/rejson.so
+14:M 06 Jul 2023 17:15:36.734 * <search> Acquired RedisJSON_V3 API
+14:M 06 Jul 2023 17:15:36.734 * <graph> Acquired RedisJSON_V1 API
+14:M 06 Jul 2023 17:15:36.750 * <bf> RedisBloom version 2.4.5 (Git=unknown)
+14:M 06 Jul 2023 17:15:36.751 * Module 'bf' loaded from /opt/redis-stack/lib/redisbloom.so
+14:M 06 Jul 2023 17:15:36.751 * Ready to accept connections
+14:M 06 Jul 2023 17:16:19.647 # <search> creating vector index. Server memory limit: 4104077312B, required memory: 3324432B, available memory: 4100132600B
+14:M 06 Jul 2023 17:16:20.474 # <search> creating vector index. Server memory limit: 4104077312B, required memory: 3324432B, available memory: 4100073232B
+14:M 06 Jul 2023 17:17:37.064 * 1 changes in 120 seconds. Saving...
+14:M 06 Jul 2023 17:17:37.065 * Background saving started by pid 30
+30:C 06 Jul 2023 17:17:37.235 * DB saved on disk
+30:C 06 Jul 2023 17:17:37.237 * RDB: 0 MB of memory used by copy-on-write
+14:M 06 Jul 2023 17:17:37.270 * Background saving terminated with success
+14:M 06 Jul 2023 17:19:38.061 * 1 changes in 120 seconds. Saving...
+14:M 06 Jul 2023 17:19:38.062 * Background saving started by pid 31
+31:C 06 Jul 2023 17:19:38.335 * DB saved on disk
+31:C 06 Jul 2023 17:19:38.336 * RDB: 0 MB of memory used by copy-on-write
+14:M 06 Jul 2023 17:19:38.363 * Background saving terminated with success
+14:M 06 Jul 2023 17:21:39.088 * 1 changes in 120 seconds. Saving...
+14:M 06 Jul 2023 17:21:39.093 * Background saving started by pid 32
+32:C 06 Jul 2023 17:21:39.385 * DB saved on disk
+32:C 06 Jul 2023 17:21:39.387 * RDB: 0 MB of memory used by copy-on-write
+14:M 06 Jul 2023 17:21:39.394 * Background saving terminated with success

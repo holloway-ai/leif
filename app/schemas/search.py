@@ -1,14 +1,17 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel
 
 class SearchResult(BaseModel):
     id: str
     title: str
-    description: str
     path: str
-    locale: str
+
+class QnA (BaseModel):
+    question: str
+    answer: Optional[str] = None
+    links: Optional[str] = None
 
 class SearchResultFull(BaseModel):
-    results: List[SearchResult]
-    suggestions: List[SearchResult]
-    totalHits: int
+    qnas: Dict[str,QnA] = {}
+    results: Dict[str,SearchResult] # answers reference results by id , witch is key of dict
+    ordered_refs: Optional[List[str]] = None
