@@ -1,10 +1,8 @@
 import lxml.html
-import pandas as pd
-import numpy as np
-import string
 import re
-from redis.commands.search.query import Query
-from typing import List, Optional, Dict
+from typing import List, Dict
+import re
+from copy import deepcopy
 
 from app.api import deps
 import openai
@@ -26,7 +24,6 @@ OPENAI_MODEL = "gpt-3.5-turbo"
 
 
 def get_embedding(texts, model=EMBEDDING_MODEL):
-
     return deps.db.embedding.embed(texts = texts,  model=model).embeddings
 
 def generate_questions(prompt, model = OPENAI_MODEL, n = N_QUESTIONS):
@@ -65,3 +62,60 @@ def generate_answer(question, result_dics: List[Dict[str,str]]):
     refs = [f"[{j+1}] {path}_{tags[j]}" for j, path in enumerate(paths)]
 
     return answer, refs
+
+def extract_info_blocks(db):
+    parsed_html = lxml.html.fromstring(db.render)
+    elements = parsed_html.xpath("//*")
+    blocks = []
+    current_block = {
+        'render_id': 'undefined',
+        'text': '',
+        'chunk_num': 0,
+        'content': 0,
+        'path': db.path,
+        'title': db.title,
+        'locale': db.locale,
+        'doc_id': db.doc_id
+    }
+    for element in elements:
+        render_id = element.attrib.get('id', 'undefined')
+        text_parts = [node.strip() for node in element.xpath("text()") if node.strip()]
+        cleaned_text = " ".join(text_parts)
+        cleaned_text = re.sub(r'[\n¶]', ' ', cleaned_text)
+        cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+
+        if cleaned_text:
+            if render_id.startswith('p') or render_id == 'undefined':
+                current_block['text'] += cleaned_text + '. '
+                current_block['content'] = 1 if current_block['text'] else 0
+            else:
+                if current_block['text']:
+                    if len(current_block['text']) > db.THRESHOLD :
+                        texts = db.split_text(current_block['text'] )
+                        for txt in texts:
+                            current_block['text'] = txt
+                            blocks.append(deepcopy(current_block))
+                            current_block['chunk_num'] += 1
+                    else:
+                        blocks.append(deepcopy(current_block))
+                current_block =  {
+                    'render_id': render_id,
+                    'text': cleaned_text + ' ', 
+                    'chunk_num': 0,
+                    'content': 0,
+                    'path': db.path,
+                    'title': db.title,
+                    'locale': db.locale,
+                    'doc_id': db.doc_id
+                }
+    if current_block['text']:
+        if len(current_block['text']) > db.THRESHOLD :
+            texts = db.split_text(current_block['text'] )
+            for txt in texts:
+                current_block['text'] = txt
+                blocks.append(deepcopy(current_block))
+                current_block['chunk_num'] += 1
+        else:
+            blocks.append(deepcopy(current_block))
+
+    return blocks

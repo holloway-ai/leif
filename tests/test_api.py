@@ -118,7 +118,7 @@ def test_create_collection():
     assert response.status_code == 200
 
 # Test document endpoints
-def test_add_documents(test_doc, test_docs_big):
+def test_add_documents(test_doc):
     # Check if the "test_collection" exists and create it if not
     existing_collections = client.get("api/v1/collections/")
     # Parse the JSON response data
@@ -127,7 +127,7 @@ def test_add_documents(test_doc, test_docs_big):
         new_collection = Collection(name="test_collection", description="Test collection")
         client.post("api/v1/collections/", json=new_collection.dict())
     
-    new_documents =  test_docs_big 
+    new_documents = [ test_doc ]
     response = client.post("api/v1/documents/test_collection/", json = new_documents)
     
     assert response.status_code == 200

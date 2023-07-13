@@ -45,60 +45,9 @@ class DocumentDB():
         blocks.append(current_block)
         return blocks
 
-    def extract_info_blocks( self ):
-        parsed_html = lxml.html.fromstring( self.render )
-        elements = parsed_html.xpath("//*")
-        blocks = []
-        current_block = DocumentBlock(  render_id= 'undefined', 
-                                        text= '', 
-                                        chunk_num= 0,
-                                        content= 0,
-                                        path= self.path,
-                                        title= self.title,
-                                        locale= self.locale,
-                                        doc_id= self.doc_id
-                                    )
-        for element in elements:
-            render_id = element.attrib.get('id', 'undefined')
-            text_parts = [node.strip() for node in element.xpath("text()") if node.strip()]
-            cleaned_text = " ".join(text_parts)
-            cleaned_text = re.sub(r'[\n¶]', ' ', cleaned_text)
-            cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
-
-            if cleaned_text:
-                if render_id.startswith('p') or render_id == 'undefined':
-                    current_block.text += '. ' + cleaned_text
-                    current_block.content = 1 if current_block.text else 0
-                else:
-                    if current_block.text:
-                        if len(current_block.text) > self.THRESHOLD :
-                            texts = self.split_text(current_block.text )
-                            for txt in texts:
-                                current_block.text = txt
-                                blocks.append(copy.deepcopy(current_block))
-                                current_block.chunk_num += 1
-                        else:
-                            blocks.append(copy.deepcopy(current_block))
-                    current_block =  DocumentBlock( render_id = render_id, 
-                                                    text = cleaned_text + ' ', 
-                                                    chunk_num= 0,
-                                                    content= 0,
-                                                    path= self.path,
-                                                    title= self.title,
-                                                    locale= self.locale,
-                                                    doc_id= self.doc_id
-                                                    )
-        if current_block.text:
-            if len(current_block.text) > self.THRESHOLD :
-                texts = self.split_text(current_block.text )
-                for txt in texts:
-                    current_block.text = txt
-                    blocks.append(copy.deepcopy(current_block))
-                    current_block.chunk_num += 1
-            else:
-                blocks.append(copy.deepcopy(current_block))
-
-        return blocks
+    def extract_info_blocks(self):
+        dict_blocks = llm.extract_info_blocks(self)
+        return [DocumentBlock(**block) for block in dict_blocks]
     
     def extract_info_blocks_with_vectors( self ):
         blocks = self.extract_info_blocks()
@@ -110,7 +59,6 @@ class DocumentDB():
             print(vectors[ind][0:3])
 
         return blocks
-    
 
 class DocumentBlock():
     def __init__(self, doc_id: str, path: str, title: str, render_id: str, chunk_num: int, text: str, content: int, locale: str):

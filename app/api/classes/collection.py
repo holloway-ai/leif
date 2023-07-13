@@ -189,7 +189,7 @@ class CollectionDB():
                 print( f"No result in question {i+1}")
                 continue
             
-            answer, referencies = llm.generate_answer(question, result_dics)
+            answer, references = llm.generate_answer(question, result_dics)
             
             for dict in result_dics:
                 dict_id=f"{dict['path']}_{dict['render_id']}"
@@ -198,7 +198,7 @@ class CollectionDB():
                                                     title = dict['title']
                                                 )
             
-            qnas[str(i)] = schemas.QnA(question = question,answer = answer,links = " ".join(referencies))
+            qnas[str(i)] = schemas.QnA(question = question,answer = answer,links = " ".join(references))
 
         return schemas.SearchResultFull(qnas = qnas, results = results )
 
@@ -209,7 +209,6 @@ class CollectionDB():
         print('Got questions!')
 
         # Create a counter dictionary to keep track of reference usage
-        reference_counter = Counter()
         global_reference_counter = Counter()
 
         for i, question in enumerate( questions ):
@@ -220,12 +219,12 @@ class CollectionDB():
                 print( f"No result in question {i+1}")
                 continue
 
-            answer, referencies = llm.generate_answer(question, result_dics)
+            answer, references = llm.generate_answer(question, result_dics)
 
             # Map from local reference number to global reference
             local_to_global = {}
 
-            for ref in referencies:
+            for ref in references:
                 # Get the global reference from the Counter
                 ref_parts = ref.split(' ', 1)
                 local_ref_num = ref_parts[0][1:-1] # extract number from the format "[#]"
@@ -246,7 +245,7 @@ class CollectionDB():
                                                     title = dict['title']
                                                 )
             
-            qnas[str(i)] = schemas.QnA(question = question,answer = answer,links = " ".join(referencies))
+            qnas[str(i)] = schemas.QnA(question = question,answer = answer,links = " ".join(references))
 
         return schemas.SearchResultFull(qnas = qnas, results = results, ordered_refs = list(global_reference_counter.keys()) )
 
