@@ -4,54 +4,38 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app import schemas
 from app.api import deps
+from app.api import llm
 
-from app.shared_state import existing_collections
+from app.api.classes import collection as collection_class
+
 
 router = APIRouter()
 
 @router.get("/", response_model=List[str])
-def list_collections() -> Any:
+def list_collections() -> Any:   
     """
-    Retrieve existing collections names.
-    """
-    return list(existing_collections.keys())
+    List existing collection.
+    """ 
+    return collection_class.list_collections()
 
-@router.post("/", response_model=schemas.Collection)
-def create_collection(new_collection: schemas.CollectionCreate) -> Any:
+@router.post("/", response_model=str)
+def create_collection(new_collection: schemas.Collection) -> Any:
     """
     Add new empty collection.
     """
-    if new_collection.name in existing_collections:
-        raise HTTPException(status_code=409, detail="Collection already exists")
+    collection_db = collection_class.CollectionDB(connection = deps.db.connection, name = new_collection.name)
+    collection_db.create_index()
+    return "Index created / updated"
 
-    collection = schemas.Collection(name=new_collection.name,
-                                    description=new_collection.description,
-                                    documents={}
-                                    )
-    existing_collections[new_collection.name] = collection
-    return collection
 
-@router.put("/{name}", response_model=schemas.Collection)
-def update_collection(name: str, updated_collection: schemas.CollectionCreate) -> Any:
-    if name not in existing_collections:
-        raise HTTPException(status_code=404, detail="Collection not found")
+@router.delete("/{collection_name}", response_model=str)
+def delete_collection(collection_name: str, collection_db: collection_class.CollectionDep) -> Any:
+    """
+    Delete collection.
+    """
+    existing_collections = collection_class.list_collections()
+    
+    if collection_name not in existing_collections:
+        raise HTTPException(status_code=404, detail="Collection not found")    
 
-    collection = existing_collections[name]
-    collection.name = updated_collection.name
-    collection.description = updated_collection.description
-
-    # Update the dictionary key if the name has changed
-    if name != updated_collection.name:
-        existing_collections[updated_collection.name] = collection
-        del existing_collections[name]
-
-    return collection
-
-@router.delete("/{name}", response_model= str )
-def delete_collection(name: str) -> Any:
-    if name not in existing_collections:
-        raise HTTPException(status_code=404, detail="Collection not found")
-
-    del existing_collections[name]
-
-    return f"Collection {name} deleted"
+    return collection_db.delete_collection()
