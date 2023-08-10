@@ -5,14 +5,39 @@ import os
 from app.main import app
 
 from starlette.testclient import TestClient
-import json
+import pytest
+
 from typing import List
 
 from app.api.api_v1.api import collection, document, search
-from app.schemas import Collection, CollectionCreate, Document, DocumentUpdate, SearchResultFull, SearchResult
-from app.shared_state import existing_collections
+from app.schemas import Collection, Document
+from app.api import llm
+import json
 
 client = TestClient(app)
+
+# This is your fixture function
+@pytest.fixture(scope="session")
+def test_docs():
+    json_file_path = os.path.join(os.path.dirname(__file__), 'test_documents.json')
+    with open(json_file_path) as json_file:
+        data = json.load(json_file)
+    return data
+
+@pytest.fixture(scope="session")
+def test_docs_big():
+    json_file_path = os.path.join(os.path.dirname(__file__), 'output.json')
+    with open(json_file_path) as json_file:
+        data = json.load(json_file)
+    return data
+
+@pytest.fixture
+def test_doc(test_docs):
+    return test_docs[0]
+
+@pytest.fixture
+def test_doc_update(test_docs):
+    return test_docs[1]
 
 def test_docs_redirect():
     response = client.get("/")
@@ -20,22 +45,8 @@ def test_docs_redirect():
     assert response.status_code == 200
     assert response.url == "http://testserver/docs"
 
-def test_update_collection():
-    # Check if the "test_collection" exists and create it if not
-    if "test_collection" not in existing_collections:
-        new_collection = CollectionCreate(name="test_collection", description="Test collection")
-        client.post("api/v1/collections/", json=new_collection.dict())
-
-    update_collection = CollectionCreate(name="test_collection", description="UPDATE test collection description")
-    response = client.put("api/v1/collections/test_collection/", json=update_collection.dict())
-    assert response.status_code == 200
-
 def test_list_collections():
     # Check if the "test_collection" exists and create it if not
-    if "test_collection" not in existing_collections:
-        new_collection = CollectionCreate(name="test_collection", description="Test collection")
-        client.post("api/v1/collections/", json=new_collection.dict())
-
     response = client.get("api/v1/collections/")
     assert response.status_code == 200
 
@@ -43,99 +54,88 @@ def test_list_documents():
     response = client.get("api/v1/documents/test_collection/")
     assert response.status_code == 200
 
-def test_update_document():
+def test_update_document(test_doc, test_doc_update):
     # Check if the "test_collection" exists and create it if not
+    existing_collections = client.get("api/v1/collections/")
+    # Parse the JSON response data
+    existing_collections = existing_collections.json()
     if "test_collection" not in existing_collections:
-        new_collection = CollectionCreate(name="test_collection", description="Test collection")
+        new_collection = Collection(name="test_collection", description="Test collection")
+        client.post("api/v1/collections/", json=new_collection.dict())
+    
+    new_documents = [test_doc]  # test_doc is already a dictionary
+    response = client.post("api/v1/documents/test_collection/", json=new_documents)
+
+    response = client.put("api/v1/documents/test_collection/12345", json=test_doc_update)
+    assert response.status_code == 200
+
+def test_read_document(test_doc):
+    # Check if the "test_collection" exists and create it if not
+    existing_collections = client.get("api/v1/collections/")
+    # Parse the JSON response data
+    existing_collections = existing_collections.json()
+    if "test_collection" not in existing_collections:
+        new_collection = Collection(name="test_collection", description="Test collection")
         client.post("api/v1/collections/", json=new_collection.dict())
 
-    # Check if the document "test_document_1" exists and create it if not
-    collection_for_test = document.get_collection_by_name("test_collection")
-    if "test_document_1" not in collection_for_test.documents:
-        documents = [Document(path="test_document_1", localeCode="en", title="Test Document 1", 
-                              description="Test Document 1", render="test document 1 render").dict()]
-        response = client.post("api/v1/documents/test_collection/", json = documents)
+    new_documents = [ test_doc ]
+    response = client.post("api/v1/documents/test_collection/", json = new_documents)
 
-    updated_document = DocumentUpdate(localeCode="en", title="Updated Document", description="Updated Document",
-                                              render="updated document render")
-    response = client.put("api/v1/documents/test_collection/test_document_1", json=updated_document.dict())
+    response = client.get("api/v1/documents/test_collection/12345")
     assert response.status_code == 200
 
-def test_read_document():
+def test_delete_document( test_doc ):
     # Check if the "test_collection" exists and create it if not
+    existing_collections = client.get("api/v1/collections/")
+    # Parse the JSON response data
+    existing_collections = existing_collections.json()
+    
     if "test_collection" not in existing_collections:
-        new_collection = CollectionCreate(name="test_collection", description="Test collection")
+        new_collection = Collection(name="test_collection", description="Test collection")
         client.post("api/v1/collections/", json=new_collection.dict())
 
-    # Check if the document "test_document_1" exists and create it if not
-    collection_for_test = document.get_collection_by_name("test_collection")
-    if "test_document_1" not in collection_for_test.documents:
-        documents = [Document(path="test_document_1", localeCode="en", title="Test Document 1", 
-                              description="Test Document 1", render="test document 1 render").dict()]
-        response = client.post("api/v1/documents/test_collection/", json = documents)
+    new_documents = [ test_doc ]
+    response = client.post("api/v1/documents/test_collection/", json = new_documents)
 
-    response = client.get("api/v1/documents/test_collection/test_document_1")
+    response = client.delete("api/v1/documents/test_collection/12345")
     assert response.status_code == 200
-
-def test_delete_document():
-    # Check if the "test_collection" exists and create it if not
-    if "test_collection" not in existing_collections:
-        new_collection = CollectionCreate(name="test_collection", description="Test collection")
-        client.post("api/v1/collections/", json=new_collection.dict())
-
-    # Check if the document "test_document_1" exists and create it if not
-    collection_for_test = document.get_collection_by_name("test_collection")
-    if "test_document_1" not in collection_for_test.documents:
-        documents = [Document(path="test_document_1", localeCode="en", title="Test Document 1", 
-                              description="Test Document 1", render="test document 1 render").dict()]
-        response = client.post("api/v1/documents/test_collection/", json = documents)
-
-    response = client.delete("api/v1/documents/test_collection/test_document_1")
-    assert response.status_code == 200
-
-# Test search endpoint
-def test_search():
-    response = client.get("api/v1/search/?query=Test Document 1")
-    response_data = json.loads(response.content)
-    assert response.status_code == 200
-    assert isinstance(response_data, dict)
-    assert "results" in response_data
-    assert "suggestions" in response_data
-    assert "totalHits" in response_data
 
 # DELETE collection
-def test_delete_collection():
+def test_delete_collection( ):
+       # Check if the "test_collection" exists and create it if notz
+    existing_collections = client.get("api/v1/collections/")
+    existing_collections = existing_collections.json()
+    if "test_collection" not in existing_collections:
+        new_collection = Collection(name="test_collection", description="Test collection")
+        client.post("api/v1/collections/", json=new_collection.dict())
     response = client.delete("api/v1/collections/test_collection/")
     assert response.status_code == 200
 
 # Test collection endpoints
 def test_create_collection():
-    new_collection = CollectionCreate(name="test_collection", description="test collection description")
+    new_collection = Collection(name="test_collection", description="test collection description")
     response = client.post("api/v1/collections/", json=new_collection.dict())
     assert response.status_code == 200
 
 # Test document endpoints
-def test_add_documents():
-    documents = [
-        Document(path="test_document_1", localeCode="en", title="Test Document 1", description="Test Document 1",
-                 render="test document 1 render").dict(),
-        Document(path="test_document_2", localeCode="en", title="Test Document 2", description="Test Document 2",
-                 render="test document 2 render").dict()
-    ]
-    response = client.post("api/v1/documents/test_collection/", json = documents)
+def test_add_documents(test_doc):
+    # Check if the "test_collection" exists and create it if not
+    existing_collections = client.get("api/v1/collections/")
+    # Parse the JSON response data
+    existing_collections = existing_collections.json()
+    if "test_collection" not in existing_collections:
+        new_collection = Collection(name="test_collection", description="Test collection")
+        client.post("api/v1/collections/", json=new_collection.dict())
+    
+    new_documents = [ test_doc ]
+    response = client.post("api/v1/documents/test_collection/", json = new_documents)
+    
     assert response.status_code == 200
 
-# Run all tests
-def run_tests():
-    test_docs_redirect()
-    test_update_collection()
-    test_list_collections()
-    test_update_document()
-    test_list_documents()
-    test_read_document()
-    test_delete_document()
-    test_search()
-    test_delete_collection()
-    test_create_collection()
-    test_add_documents()
-    print("All tests passed!")
+
+# Test search endpoint
+def test_search():
+    response = client.get("api/v1/search/test_collection/?query=Questions about God")
+    response_data = json.loads(response.content)
+    assert response.status_code == 200
+

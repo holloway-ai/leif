@@ -1,14 +1,23 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel
 
 class SearchResult(BaseModel):
     id: str
     title: str
-    description: str
     path: str
-    locale: str
+    text: str
+
+class SearchResultDocument(BaseModel):
+    title: str
+    path: str
+    text_blocks: List[str]
+
+class QnA(BaseModel):
+    question: str
+    answer: Optional[str] = None
+    links: str
 
 class SearchResultFull(BaseModel):
-    results: List[SearchResult]
-    suggestions: List[SearchResult]
-    totalHits: int
+    qnas: List[QnA]
+    qnas_results: List[SearchResultDocument]
+    query_results: List[SearchResultDocument]

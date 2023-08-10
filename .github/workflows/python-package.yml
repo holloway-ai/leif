@@ -40,16 +40,19 @@ jobs:
       run: |
         poetry install --with dev
     - name: Test with pytest
+      env:
+        COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+        OPENAI_API: ${{ secrets.OPENAI_API}}
       run: |
+        docker-compose -f docker/docker-local-redis.yml up -d
         poetry run pytest --junitxml=tests/test-results.xml  --cov=app --cov-report=xml:coverage/cov-results.xml --cov-report=html:coverage/cov-results.html
+        docker-compose -f docker/docker-local-redis.yml down
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2.7.0
       if: always()
       with:
         files: |
           tests/*.xml
-          tests/*.trx
-          tests/*.json
         check_run_annotations: all tests
         job_summary: true
         compare_to_earlier_commit: true
