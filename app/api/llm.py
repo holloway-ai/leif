@@ -192,7 +192,11 @@ def extract_info_blocks(db):
 
         if cleaned_text:
             if render_id.startswith('p') or render_id == 'undefined':
-                current_block['text'] += cleaned_text + ' '
+                # Add the conditional check here
+                if cleaned_text.endswith(' .'):
+                    current_block['text'] += ' '
+                else:
+                    current_block['text'] += cleaned_text + '. '
                 current_block['content'] = 'True' if current_block['text'] else 'False'
             else:
                 if current_block['text']:
@@ -204,9 +208,14 @@ def extract_info_blocks(db):
                             current_block['chunk_num'] += 1
                     else:
                         blocks.append(deepcopy(current_block))
+                # Add the conditional check here
+                if cleaned_text.endswith(' .'):
+                    spacer = ' '
+                else:
+                    spacer = '. '
                 current_block =  {
                     'render_id': render_id,
-                    'text': cleaned_text + ' ', 
+                    'text': cleaned_text + spacer, 
                     'chunk_num': 0,
                     'content': 'False',
                     'path': db.path,
