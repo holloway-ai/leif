@@ -53,10 +53,9 @@ class DocumentDB():
         blocks = self.extract_info_blocks()
         blocks_texts = [ block.text for block in blocks]
         vectors = llm.get_embedding(blocks_texts)
-
+        
         for ind, block in enumerate(blocks) :
             block.vector = vectors[ind]
-            print(vectors[ind][0:3])
 
         return blocks
 
@@ -81,7 +80,6 @@ class DocumentBlock():
             self.get_block_embedding()
 
         document_metadata = vars(self)
-        print(  document_metadata.keys() )
         if vector_embed != 'vector':
             document_metadata[vector_embed] = document_metadata['vector']
             del document_metadata['vector']

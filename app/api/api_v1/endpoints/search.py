@@ -12,5 +12,5 @@ def search(collection: collection_class.CollectionDep, query: str) -> Any:
     """
     Semantic search in the collection. Question+Answer with links
     """
-    return collection.QA_search(query)
+    return collection.full_search_doc(query)
 
