@@ -10,7 +10,9 @@ from app.core.config import settings
 import re
 from app import schemas
 
-TOP_LINKS = 5
+TOP_LINKS = 30
+TOP_LINKS_QnA = 5
+
 N_QUESTIONS = 3
 
 EMBEDDING_MODEL = 'embed-multilingual-v2.0'
@@ -79,7 +81,7 @@ def generate_answer(question, search_results):
 def count_refs_in_answers( qnas ):
     result_counts_dict = {}
     for qna in qnas:
-        references = qna.links.split(' ')
+        references = qna.links #.split(' ')
         ref_list = [int(match) for match in re.findall(r'\[(\d+)\]', qna.answer)] 
         # Initialize SearchResult.id occurrences to 0 for this question
         for ref in references:
@@ -96,7 +98,7 @@ def count_refs_in_answers( qnas ):
 def count_docs_in_answers( qnas ):
     docs_counts_dict = {}
     for qna in qnas:
-        references = qna.links.split(' ')
+        references = qna.links #.split(' ')
         unique_docs = set([ref.split('#')[0] for ref in references])
         # Initialize SearchResult.id occurrences to 0 for this question
         for doc in unique_docs:
@@ -114,9 +116,9 @@ def count_docs_in_answers( qnas ):
 
 def change_ref_in_answer( qna, id_to_new_position ):
     new_answer = qna.answer
-    references = qna.links.split(' ')
+    references = qna.links #.split(' ')
     for old_id, new_position in id_to_new_position.items():
-        if old_id in references:
+        if old_id in qna.links:
             old_position = references.index(old_id) + 1  # get the old position by finding the index in references
             new_answer = new_answer.replace(f"[{old_position}]", f"[{new_position}]")
         else:
@@ -126,8 +128,7 @@ def change_ref_in_answer( qna, id_to_new_position ):
 
 def change_docs_in_answer( qna, id_to_new_position ):
     new_answer = qna.answer
-    references = qna.links.split(' ')
-    ref_docs = [ref.split('#')[0] for ref in references]
+    ref_docs = [ref.split('#')[0] for ref in qna.links]
         
     # Create a mapping from old_position to new_position
     old_to_new_positions = {}
@@ -162,9 +163,7 @@ def change_docs_numbers( qnas, unique_docs ):
     
     for qna in qnas_ranked:
         qna.answer = change_docs_in_answer( qna, id_to_new_position)
-    
-    print(f'Got results for change_doc_numbers, {sorted_docs[0]}')
-    
+       
     return qnas_ranked, sorted_docs
 
 

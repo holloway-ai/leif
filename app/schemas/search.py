@@ -15,7 +15,7 @@ class SearchResultDocument(BaseModel):
 class QnA(BaseModel):
     question: str
     answer: Optional[str] = None
-    links: str
+    links: List[str]
 
 class SearchResultFull(BaseModel):
     qnas: List[QnA]

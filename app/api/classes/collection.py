@@ -166,17 +166,17 @@ class CollectionDB():
         print(f'Got {len(results)} result on query')
         return results
     
-    def QA_search(self, query, top_k = llm.TOP_LINKS):
-        questions = llm.generate_questions(query, n = llm.N_QUESTIONS)
+    def QA_search(self, query, top_k = llm.TOP_LINKS_QnA ):
+        questions = llm.generate_questions( query )
         qnas = []        
         results = []
         for i, question in enumerate( questions ):
-            search_results = self.search_query(query = question, top_k = top_k )
+            search_results = self.search_query( question, top_k )
             if search_results :
                 results.extend(search_results)
                 answer, references = llm.generate_answer(question, search_results)
                 print(f'Got answer on :{question}')
-                qnas.append(schemas.QnA(question = question, answer = answer, links=' '.join(references) ))
+                qnas.append(schemas.QnA(question = question, answer = answer, links=references ))
             else:
                 print( f"No result in question {i+1}")
                 continue
@@ -197,16 +197,16 @@ class CollectionDB():
         return list(documents_dict.values())
     
     def full_search(self, query, top_k = llm.TOP_LINKS):
-        initial_search_results = self.search_query(query, top_k = top_k )
-        qnas, unique_results = self.QA_search( query, top_k = llm.TOP_LINKS )
+        initial_search_results = self.search_query(query, top_k )
+        qnas, unique_results = self.QA_search( query )
         qnas_ranked, sorted_results = llm.change_ref_numbers( qnas, unique_results )
 
         return schemas.SearchResultFull(qnas = qnas_ranked, qnas_results = sorted_results, query_results = initial_search_results)
 
     def full_search_doc(self, query, top_k = llm.TOP_LINKS):
-        initial_search_results = self.search_query(query, top_k = top_k )
+        initial_search_results = self.search_query(query, top_k )
         initial_search_docs = self.transform_search_results_to_documents(initial_search_results)
-        qnas, unique_results = self.QA_search( query, top_k = llm.TOP_LINKS )
+        qnas, unique_results = self.QA_search( query )
         unique_docs = self.transform_search_results_to_documents(unique_results)
         qnas_ranked, sorted_docs = llm.change_docs_numbers( qnas, unique_docs )
 
